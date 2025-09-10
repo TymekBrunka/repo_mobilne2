@@ -3,6 +3,7 @@ package com.example.zdjeciapometadanych;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -60,9 +61,25 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             InputStream inputStream = resolver.openInputStream(uri);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(inputStream, null, options);
+            width = options.outWidth;
+            height = options.outHeight;
         } catch (FileNotFoundException e) {
-
+            e.printStackTrace();
         }
+
+        // Formatowanie rozmiaru
+        String sizeText;
+        if (size < 1024 * 1024) {
+            sizeText = (size / 1024) + "KB";
+        } else {
+            sizeText = String.format("%.2f MB", size / (1024 * 1024));
+        }
+
+        String info = String.format("Nazwa: %s\nRozmiar: %s\nRozdzielczość: %dx%d", name, sizeText, width, height);
+        textInfo.setText(info);
     }
 
     @Override
